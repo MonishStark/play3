@@ -1,0 +1,118 @@
+# @format
+
+name: "I Got Mind: Automation"
+
+on:
+  workflow_dispatch: # Manual Button
+  schedule:
+    - cron: "30 3 * * 1" # Monday 9:00 AM IST (3:30 AM UTC)
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright Tests
+        continue-on-error: true
+        run: npx playwright test --config=igotmind/playwright.config.js --update-snapshots
+        env:
+          TEST_EMAIL: ${{ secrets.IGOTMIND_TEST_EMAIL }}
+          TEST_PASSWORD: ${{ secrets.IGOTMIND_TEST_PASSWORD }}
+
+      - name: Move Reports to Site Folder
+        if: always()
+        run: |
+          # 1. Create folder if missing
+          mkdir -p igotmind
+
+          # 2. Move the HTML Report Folder
+          if [ -d "playwright-report" ]; then
+            rm -rf igotmind/playwright-report
+            mv playwright-report igotmind/
+            echo "✅ Moved HTML Report"
+          fi
+
+          # 3. Move the JSON Results File
+          if [ -f "results.json" ]; then
+            mv results.json igotmind/
+            echo "✅ Moved JSON Results"
+          fi
+
+      - name: Calculate Test Stats
+        if: always()
+        run: |
+          node -e "
+            try {
+              const fs = require('fs');
+              // We just moved it here, so this will work now!
+              if (fs.existsSync('./igotmind/results.json')) {
+                const r = require('./igotmind/results.json');
+                const passed = r.stats.expected + r.stats.flaky;
+                const failed = r.stats.unexpected;
+                console.log('PASSED=' + passed);
+                console.log('FAILED=' + failed);
+                console.log('TOTAL=' + (passed + failed));
+              } else {
+                console.log('PASSED=0');
+                console.log('FAILED=Error');
+                console.log('TOTAL=0');
+              }
+            } catch (e) {
+              console.log('PASSED=0');
+              console.log('FAILED=Crash');
+              console.log('TOTAL=0');
+            }
+          " >> $GITHUB_ENV
+
+      - name: Upload Report Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: igotmind/playwright-report/
+          retention-days: 30
+
+      - name: Send Email Notification
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: premium49.web-hosting.com
+          server_port: 465
+          username: ${{ secrets.REPORT_FROM_MAIL }}
+          password: ${{ secrets.REPORT_FROM_PASSWORD }}
+          subject: "I Got Mind - QA Automation Complete: ${{ env.PASSED }}/${{ env.TOTAL }} Passed"
+          body: |
+            I Got Mind – QA Automation Summary
+            Execution Status: Completed
+
+            SUMMARY:
+            ✅ Passed: ${{ env.PASSED }}
+            ❌ Failed: ${{ env.FAILED }}
+
+            📂 DOWNLOAD FULL REPORT:
+            1. Open the link ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            2. Navigate to the "Artifacts" section.
+            3. Click "playwright-report" to download the ZIP file.
+
+          to: ${{ secrets.REPORT_TO_MAILS }}
+          from: "QA Automation Bot"
