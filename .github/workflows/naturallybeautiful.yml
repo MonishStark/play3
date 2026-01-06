@@ -36,7 +36,7 @@ jobs:
       # 1. Run Tests (Targeting Naturally Beautiful Config)
       - name: Run Playwright Tests
         continue-on-error: true
-        run: npx playwright test --config=naturallybeautiful/playwright.config.js --update-snapshots
+        run: npx playwright test --config=naturallybeautiful/playwright.config.js
         env:
           CI: true
 
