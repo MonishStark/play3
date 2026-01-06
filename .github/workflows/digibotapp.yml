@@ -36,7 +36,7 @@ jobs:
       # 1. Run Tests (Targeting DigiBot Config)
       - name: Run Playwright Tests
         continue-on-error: true
-        run: npx playwright test --config=digibotapp/playwright.config.js 
+        run: npx playwright test --config=digibotapp/playwright.config.js --update-snapshots
         # No login secrets needed for public pages, but kept for future use
         env:
           CI: true
