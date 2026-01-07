@@ -16,13 +16,16 @@ for (const p of pages) {
 		}
 
 		// ✅ 1️⃣ FULL PAGE SCREENSHOT ATTACHED TO REPORT (VISIBLE INLINE)
-		const fullPageBuffer = await page.screenshot({
+		const safeName = String(p.name).replace(/[^a-z0-9._-]+/gi, "-");
+		const screenshotPath = testInfo.outputPath(`FULL-PAGE-${safeName}.png`);
+		await page.screenshot({
 			fullPage: true,
 			animations: "disabled",
+			path: screenshotPath,
 		});
 
 		await testInfo.attach(`FULL PAGE – ${p.name}`, {
-			body: fullPageBuffer,
+			path: screenshotPath,
 			contentType: "image/png",
 		});
 
