@@ -102,20 +102,16 @@ jobs:
           from: "QA Automation Bot"
           content_type: text/html
           html_body: |
-            <div>
-              <div><strong>Microloc Directory – QA Automation Summary</strong></div>
-              <div>Execution Status: Completed</div>
-              <br />
-              <div><strong>SUMMARY:</strong></div>
-              <br />
-              <div>✅ Passed: ${{ env.PASSED }}</div>
-              <div>❌ Failed: ${{ env.FAILED }}</div>
-              <br />
-              <div><strong>📂 DOWNLOAD FULL REPORT:</strong></div>
-              <div>
-                Open the link <a href="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}">${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}</a>.
-              </div>
-              <div>Navigate to the "Artifacts" section.</div>
-              <div>Click "microlocdirectory-report" to download the ZIP file.</div>
-              <div><strong>Note: Screenshots in the report do not include the footer section.</strong></div>
-            </div>
+            Microloc Directory – QA Automation Summary
+            Execution Status: Completed
+
+            SUMMARY:
+            ✅ Passed: ${{ env.PASSED }}
+            ❌ Failed: ${{ env.FAILED }}
+
+            📂 DOWNLOAD FULL REPORT:
+            1. Open the link ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            2. Navigate to the "Artifacts" section.
+            3. Click "microlocsdirectory-report" to download the ZIP file.
+
+            ⚠️Note: Screenshots in the report do not include the footer section.
