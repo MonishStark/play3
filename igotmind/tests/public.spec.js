@@ -14,10 +14,31 @@ async function preparePageForScreenshot(page) {
 		window.__PLAYWRIGHT__ = true;
 	});
 
+	// 1. Force eager loading and wait for images
 	await page.evaluate(async () => {
+		// Force all images to load eagerly
+		const images = document.querySelectorAll("img");
+		images.forEach((img) => {
+			img.setAttribute("loading", "eager");
+			img.setAttribute("decoding", "sync");
+		});
+
+		// Wait for all images to be completely loaded
+		await Promise.all(
+			Array.from(images).map((img) => {
+				if (img.complete) return;
+				return new Promise((resolve) => {
+					img.onload = resolve;
+					img.onerror = resolve; // Resolve even on error to avoid hanging
+				});
+			})
+		);
+
+		// Wait for fonts
 		await document.fonts.ready;
 	});
 
+	// 2. Disable animations and hide dynamic overlays
 	await page.addStyleTag({
 		content: `
       * {
@@ -25,6 +46,7 @@ async function preparePageForScreenshot(page) {
         transition: none !important;
       }
 
+      /* Force visibility on Elementor animations */
       .elementor-invisible,
       .elementor-motion-effects-element,
       .elementor-motion-effects-parent {
@@ -33,24 +55,30 @@ async function preparePageForScreenshot(page) {
         transform: none !important;
       }
 
-      #moove_gdpr_cookie_info_bar {
+      /* Hide potential popups or cookie bars that affect height/layout */
+      #moove_gdpr_cookie_info_bar,
+      .dialog-widget-content,
+      .popup-overlay {
         display: none !important;
       }
     `,
 	});
 
+	// 3. Scroll to bottom to trigger any scroll-based interactions
 	await page.evaluate(async () => {
 		const delay = (ms) => new Promise((r) => setTimeout(r, ms));
 		const height = document.body.scrollHeight;
 
-		for (let y = 0; y < height; y += 250) {
+		for (let y = 0; y < height; y += 400) {
 			window.scrollTo(0, y);
-			await delay(80);
+			await delay(50);
 		}
 
 		window.scrollTo(0, 0);
+		await delay(500); // Allow top layout to settle
 	});
 
+	// Final safety wait for any latyout shifts
 	await page.waitForTimeout(3000);
 }
 

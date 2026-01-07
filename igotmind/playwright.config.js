@@ -6,7 +6,6 @@ module.exports = defineConfig({
 	testDir: "./tests",
 
 	fullyParallel: true,
-	forbidOnly: !!process.env.CI,
 	retries: 0,
 	workers: process.env.CI ? 2 : undefined,
 
@@ -18,7 +17,7 @@ module.exports = defineConfig({
 		baseURL: "https://igotmind.ca",
 
 		trace: "on-first-retry",
-		screenshot: "only-on-failure",
+		screenshot: "on",
 
 		launchOptions: {
 			args: ["--disable-blink-features=AutomationControlled"],

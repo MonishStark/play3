@@ -34,7 +34,7 @@ jobs:
 
       - name: Run Playwright Tests
         continue-on-error: true
-        run: npx playwright test --config=igotmind/playwright.config.js --update-snapshots
+        run: npx playwright test --config=igotmind/playwright.config.js
         env:
           TEST_EMAIL: ${{ secrets.IGOTMIND_TEST_EMAIL }}
           TEST_PASSWORD: ${{ secrets.IGOTMIND_TEST_PASSWORD }}
