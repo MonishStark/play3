@@ -86,5 +86,31 @@ module.exports = defineConfig({
 					"Mozilla/5.0 (Linux; Android 15; SM-S938B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Mobile Safari/537.36",
 			},
 		},
+		{
+			name: "iPad Pro 11-inch",
+			use: {
+				browserName: "chromium",
+				channel: "chrome",
+				viewport: { width: 834, height: 1194 },
+				deviceScaleFactor: 3,
+				isMobile: true,
+				hasTouch: true,
+				userAgent:
+					"Mozilla/5.0 (iPad; CPU OS 19_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/19.0 Mobile/15E148 Safari/604.1",
+			},
+		},
+		{
+			name: "Galaxy Tab S9 FE",
+			use: {
+				browserName: "chromium",
+				channel: "chrome",
+				viewport: { width: 800, height: 1280 },
+				deviceScaleFactor: 3,
+				isMobile: true,
+				hasTouch: true,
+				userAgent:
+					"Mozilla/5.0 (Linux; Android 15; SM-X516B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+			},
+		},
 	],
 });

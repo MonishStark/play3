@@ -22,7 +22,7 @@ test.describe("DigiBot – Visual Regression", () => {
 			await expect(page).toHaveScreenshot(`${p.name}.png`, {
 				fullPage: true,
 				timeout: 30000,
-				maxDiffPixelRatio: 0.07,
+				maxDiffPixelRatio: 0.02,
 				scale: "css",
 				animations: "disabled",
 			});
