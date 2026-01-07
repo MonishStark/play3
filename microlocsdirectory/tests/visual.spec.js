@@ -20,14 +20,17 @@ test.describe("Visual Regression Tests", () => {
 			await stabilizePage(page);
 
 			// ✅ Always attach full-page screenshot to HTML report (even if test passes)
-			const fullPageBuffer = await page.screenshot({
+			const safeName = String(pageConfig.name).replace(/[^a-z0-9._-]+/gi, "-");
+			const screenshotPath = testInfo.outputPath(`FULL-PAGE-${safeName}.png`);
+			await page.screenshot({
 				fullPage: true,
 				scale: "css",
 				animations: "disabled",
+				path: screenshotPath,
 			});
 
 			await testInfo.attach(`FULL PAGE – ${pageConfig.name}`, {
-				body: fullPageBuffer,
+				path: screenshotPath,
 				contentType: "image/png",
 			});
 

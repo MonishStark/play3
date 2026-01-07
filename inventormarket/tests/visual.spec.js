@@ -11,13 +11,16 @@ test.describe("Full Page Visual Audit (Always Show Screenshot)", () => {
 			await stabilizePage(page);
 
 			// ✅ ALWAYS capture screenshot
-			const current = await page.screenshot({
+			const safeName = String(p.name).replace(/[^a-z0-9._-]+/gi, "-");
+			const screenshotPath = testInfo.outputPath(`SCREENSHOT-${safeName}.png`);
+			await page.screenshot({
 				fullPage: true,
+				path: screenshotPath,
 			});
 
 			// ✅ ALWAYS attach to report
 			await testInfo.attach(`SCREENSHOT – ${p.name}`, {
-				body: current,
+				path: screenshotPath,
 				contentType: "image/png",
 			});
 

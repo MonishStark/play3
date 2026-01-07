@@ -12,9 +12,11 @@ test.describe("DigiBot – Visual Regression", () => {
 			await stabilizePage(page);
 
 			// Attach raw full-page screenshot to HTML report
-			const fullPageBuffer = await page.screenshot({ fullPage: true });
+			const safeName = String(p.name).replace(/[^a-z0-9._-]+/gi, "-");
+			const screenshotPath = testInfo.outputPath(`FULL-PAGE-${safeName}.png`);
+			await page.screenshot({ fullPage: true, path: screenshotPath });
 			await testInfo.attach(`FULL PAGE – ${p.name}`, {
-				body: fullPageBuffer,
+				path: screenshotPath,
 				contentType: "image/png",
 			});
 
